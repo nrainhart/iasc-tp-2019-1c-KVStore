@@ -1,5 +1,6 @@
 var express = require('express');
 var bodyParser = require('body-parser');
+const args = require('minimist')(process.argv.slice(2))
 
 var app = express();
 app.use(bodyParser.json()); // support json encoded bodies
@@ -22,4 +23,6 @@ app.post('/api/insertar', function(req, res) {
     res.send("OK");
 });
 
-app.listen(3000);
+app.listen(args['port'], function () {
+  console.log('App listening on port: ' + args['port']);
+});

@@ -1,0 +1,77 @@
+{
+	"info": {
+		"_postman_id": "901a821b-e7ac-4985-b63b-0df287f84c3b",
+		"name": "IASC",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Insert Key-Value",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"key\": \"someKey\",\n\t\"value\": \"someValue\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/insertar",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"insertar"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Read Value",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/conseguir?key=someKey",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"conseguir"
+					],
+					"query": [
+						{
+							"key": "key",
+							"value": "someKey"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

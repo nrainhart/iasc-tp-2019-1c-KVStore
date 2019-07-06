@@ -16,13 +16,20 @@ app.get('/api/saludar', function (req, res) {
 
 app.get('/api/conseguir', function (req, res) {
   validarQueSoyMaster();
-  var data = map.get(req.query.key);
-  res.send(data);
+  let key = req.query.key;
+  let data = map.get(key);
+  if(data !== undefined) {
+    res.send(data);
+  } else {
+    res.status(404).json({ error: `No se encontró la clave [${key}]`});
+  }
 });
 
 app.post('/api/insertar', function (req, res) {
   validarQueSoyMaster();
-  map.set(req.body.key, req.body.value);
+  let key = req.body.key;
+  let value = req.body.value;
+  map.set(key, value);
   res.send('OK');
 });
 

@@ -14,22 +14,36 @@ clusterNode1.save("clusterNode1", "clusterNode1");
 clusterNode2.save("clusterNode2", "clusterNode2");
 clusterNode3.save("clusterNode3", "clusterNode3");
 
-const consistentHashing = new ConsistentHashing([clusterNode1, clusterNode2, clusterNode3]);
+const consistentHashing = new ConsistentHashing(["clusterNode1", "clusterNode2", "clusterNode3"]);
 
 findClusterNode = function (key) {
     return consistentHashing.getNode(key);
+}
+
+getClusterNodeByName = function (name) {
+    if (name === "clusterNode1") {
+        return clusterNode1;
+    };
+    if (name === "clusterNode2") {
+        return clusterNode2;
+    };
+    if (name === "clusterNode3") {
+        return clusterNode3;
+    };
 }
 
 module.exports = {
     ring: {
 
         find: function(key) {
-            const clusterNode = findClusterNode(key);
+            const clusterName = findClusterNode(key);
+            const clusterNode = getClusterNodeByName(clusterName);
             return clusterNode.find(key);
         },
 
         save: function(key, value) {
-            const clusterNode = findClusterNode(key);
+            const clusterName = findClusterNode(key);
+            const clusterNode = getClusterNodeByName(clusterName);
             clusterNode.save(key, value);
         }
     }

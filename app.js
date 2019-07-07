@@ -1,12 +1,11 @@
-var express = require('express');
-var bodyParser = require('body-parser');
+const express = require('express');
+const bodyParser = require('body-parser');
 const args = require('minimist')(process.argv.slice(2))
+const store = require('./store').store;
 
-var app = express();
+const app = express();
 app.use(bodyParser.json()); // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
-
-var map = new Map();
 
 // respond with "hello world" when a GET request is made to the homepage
 app.get('/api/saludar', function(req, res) {
@@ -14,12 +13,12 @@ app.get('/api/saludar', function(req, res) {
 });
 
 app.get('/api/conseguir', function(req, res) {
-    var data = map.get(req.query.key);
+    const data = store.get(req.query.key);
     res.send(data);
   });
 
 app.post('/api/insertar', function(req, res) {
-    map.set(req.body.key, req.body.value);
+    store.put(req.body.key, req.body.value);
     res.send("OK");
 });
 

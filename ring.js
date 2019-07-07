@@ -2,10 +2,10 @@ const ConsistentHashing = require('consistent-hashing');
 const ClusterNode = require('./cluster_node');
 
 /*
-*TODO: estos clusters se deberian ir inicializando cuando se lea el mongo de los nodos de datos o a medida que los nodos de datos 
+*TODO: estos clusters se deberian ir inicializando cuando se lea del mongo los nodos de datos o a medida que los nodos de datos 
 le notifiquen al master que ya estan up (queda por definir...)
 */
-var clusterNode1 = new ClusterNode();
+var clusterNode1 = new ClusterNode();  
 var clusterNode2 = new ClusterNode();
 var clusterNode3 = new ClusterNode();
 
@@ -24,7 +24,7 @@ module.exports = {
 
         find: function(key) {
             const clusterNode = findClusterNode(key);
-            return clusterNode.find(key, value);
+            return clusterNode.find(key);
         },
 
         save: function(key, value) {

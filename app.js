@@ -13,7 +13,7 @@ app.get('/api/saludar', function(req, res) {
 });
 
 app.get('/api/conseguir', function(req, res) {
-    const key = req.body.key;
+    const key = req.query.key;
     console.log("leyendo key: " + key);
     const data = ring.find(key);
     res.send(data);

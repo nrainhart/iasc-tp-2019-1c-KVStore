@@ -3,6 +3,32 @@ const bodyParser = require('body-parser');
 const args = require('minimist')(process.argv.slice(2))
 const store = require('./store').store;
 
+//-------mover estooooo---------//
+var ConsistentHashing = require('consistent-hashing');
+
+//asi me gustaria que se llame el archivo en donde la papa va a estar...
+var nodeLocator = new ConsistentHashing(["node1", "node2", "node3"]);
+
+/*var nodes = {};
+var chars = [
+  'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I',
+  'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R',
+  'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'
+];
+
+chars.forEach(function(c) {
+  var node = nodeLocator.getNode(c);
+
+  if (nodes[node]) {
+    nodes[node].push(c);
+  } else {
+    nodes[node] = [];
+    nodes[node].push(c);
+  }
+});*/
+
+//console.log(nodes);
+//-----------------------------//
 const app = express();
 app.use(bodyParser.json()); // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies

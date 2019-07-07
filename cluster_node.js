@@ -3,8 +3,13 @@
 es un cluster y no un solo nodo de forma que si se cae un nodo, aun asi seguimos teniendo el pto en el anillo. Cosa
 que con un solo nodo no pasaria.
 */
-function ClusterNode () { //TODO: aca se le deberia pasar la lista de las ips de los nodos correspondientes a este cluster
+function ClusterNode (clusterName) { //TODO: aca se le deberia pasar la lista de las ips de los nodos correspondientes a este cluster
     this.memory = new Map(); 
+    this.clusterName = clusterName
+}
+
+ClusterNode.prototype.name = function(){
+	return this.clusterName;
 }
 
 /*

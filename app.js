@@ -51,6 +51,15 @@ let masterErrorHandler = function(err, req, res, next) {
 };
 app.use(masterErrorHandler);
 
+//Chequeando si soy master
+setInterval(function () {
+  if (coordinadorDeOrquestadores.soyMaster(myKey)) {
+    console.log('Soy master');
+  } else {
+    console.log('No soy Master'); //Debería preguntar si hay un master
+  }
+}, 3000);
+
 app.listen(args['port'], function () {
   console.log('App listening on port: ' + args['port']);
 });

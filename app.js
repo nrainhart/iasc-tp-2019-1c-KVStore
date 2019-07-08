@@ -1,40 +1,16 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const args = require('minimist')(process.argv.slice(2));
+const { CoordinadorDeOrquestadores } = require('./CoordinadorDeOrquestadores');
 
 const app = express();
 app.use(bodyParser.json()); // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 
-let myKey = Math.random().toString(36).substring(7); // TODO podría tener sentido tener IP:puerto como clave
-let soyMaster = false;
+const myKey = Math.random().toString(36).substring(7); // TODO podría tener sentido tener IP:puerto como clave
 
-const { MongoClient } = require('mongodb');
-const mongoUrl = 'mongodb://localhost:27017';
-const mongoClient = new MongoClient(mongoUrl, { useNewUrlParser: true });
-const findOrCreate = (collection, key, value) => {
-  return collection.findOneAndUpdate(
-    { _id: 'master node id' },
-    {
-      $setOnInsert: { key: value }, // updates should only happen when inserting documents
-    },
-    {
-      returnOriginal: false, // return new doc if one is upserted
-      upsert: true, // insert the document if it does not exist
-    }
-  )
-};
-mongoClient.connect()
-  .then(client => {
-    const db = client.db('kvstore');
-    let masterNodeCollection = db.collection('masterNode');
-    return findOrCreate(masterNodeCollection, 'currentMasterNode', myKey)
-      .then(({ value: { key } }) => {
-        console.log(key);
-        soyMaster = key === myKey;
-      })
-      .then(() => client.close());
-  });
+const coordinadorDeOrquestadores = new CoordinadorDeOrquestadores(myKey);
+coordinadorDeOrquestadores.initializeMaster();
 
 const map = new Map();
 
@@ -63,7 +39,7 @@ app.post('/api/insertar', function (req, res) {
 });
 
 function validarQueSoyMaster() {
-  if(!soyMaster) {
+  if(!coordinadorDeOrquestadores.soyMaster()) {
     throw Error('No soy el nodo maestro');
   }
 }

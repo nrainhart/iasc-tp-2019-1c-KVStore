@@ -1,7 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const args = require('minimist')(process.argv.slice(2));
-const { CoordinadorDeOrquestadores } = require('./CoordinadorDeOrquestadores');
+const { CoordinadorDeOrquestadores, CoordinadorDeOrquestadoresMockeado } = require('./CoordinadorDeOrquestadores');
 
 const app = express();
 app.use(bodyParser.json()); // support json encoded bodies
@@ -9,8 +9,10 @@ app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 
 const myKey = Math.random().toString(36).substring(7); // TODO podría tener sentido tener IP:puerto como clave
 
-const coordinadorDeOrquestadores = new CoordinadorDeOrquestadores(myKey);
-coordinadorDeOrquestadores.initializeMaster();
+const coordinarMasterConOtrosNodos = false;
+const coordinadorDeOrquestadores = coordinarMasterConOtrosNodos ?
+  new CoordinadorDeOrquestadores(myKey) :
+  new CoordinadorDeOrquestadoresMockeado;
 
 const map = new Map();
 

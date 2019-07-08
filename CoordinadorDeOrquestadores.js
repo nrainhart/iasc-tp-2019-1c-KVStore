@@ -7,6 +7,8 @@ class CoordinadorDeOrquestadores {
   constructor(keyDelOrquestador) {
     this._soyMaster = false;
     this._keyDelOrquestador = keyDelOrquestador;
+
+    this.initializeMaster();
   }
 
   soyMaster() {
@@ -38,8 +40,16 @@ class CoordinadorDeOrquestadores {
           .then(() => client.close());
       });
   }
+
+}
+
+class CoordinadorDeOrquestadoresMockeado {
+  soyMaster() {
+    return true;
+  }
 }
 
 module.exports = {
-  CoordinadorDeOrquestadores
+  CoordinadorDeOrquestadores,
+  CoordinadorDeOrquestadoresMockeado
 };

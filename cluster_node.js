@@ -5,7 +5,7 @@ que con un solo nodo no pasaria.
 */
 function ClusterNode (clusterName) { //TODO: aca se le deberia pasar la lista de las ips de los nodos correspondientes a este cluster
     this.memory = new Map(); 
-    this.clusterName = clusterName
+    this.clusterName = clusterName;
 }
 
 ClusterNode.prototype.name = function(){

@@ -6,12 +6,13 @@ const request = require('request-promise');
 es un cluster y no un solo nodo de forma que si se cae un nodo, aun asi seguimos teniendo el pto en el anillo. Cosa
 que con un solo nodo no pasaria.
 */
-function ClusterNode (clusterName, dataNodeAddress) { //TODO: aca se le deberia pasar la lista de las ips de los nodos correspondientes a este cluster
+function ClusterNode (clusterName, dataNodes) { //TODO: aca se le deberia pasar la lista de las ips de los nodos correspondientes a este cluster
     //------Deprecado-------//
     this.memory = new Map(); 
     //----------------------//
     this.clusterName = clusterName;
-    this.dataNodeAddress = dataNodeAddress;
+    console.log("dataNodes: " + dataNodes);
+    this.dataNodes = dataNodes;
 }
 
 ClusterNode.prototype.name = function(){
@@ -30,16 +31,24 @@ ClusterNode.prototype.find = function(key) {
 };
 
 ClusterNode.prototype.findRest = function(key) {
-    let response = this.doRequest(key);
-    console.log("respuesta del nodo de datos: " + response);
-    return response;
+    const requests = this.dataNodes.map(dataNode => this.getKeyFromOneDataNode(key, dataNode));
+    return Promise.all(requests)
+    .then((values) => {
+        let valorMasNuevo = this.valorMasReciente(values);
+        console.log("valor mas nuevo: " + valorMasNuevo);
+        return valorMasNuevo;
+    });
+    //.catch(/* handle error */);
 };
 
+ClusterNode.prototype.valorMasReciente = function(shots) {
+    return shots.reduce((max, shot) => max && max.timestamp > shot.timestamp ? max : shot, null);
+}
 
-ClusterNode.prototype.doRequest = function(key) {
+ClusterNode.prototype.getKeyFromOneDataNode = function(key, dataNode) {
     return request({
         "method":"GET", 
-        "uri": this.dataNodeAddress + "/obtener" + "?key=" + key,
+        "uri": dataNode + "/obtener" + "?key=" + key,
       });
 }
 
@@ -54,10 +63,10 @@ ClusterNode.prototype.save = function(key, value) {
     this.showEntries();
 };
 
-ClusterNode.prototype.saveRest = function(key, value) {
+ClusterNode.prototype.saveRest = function(key, value) { //TODO: hacer algo similar a lo del promise.all para guardar en todos los nodos del cluster
     return request({
         method: 'POST',
-        uri: this.dataNodeAddress + "/guardar",
+        uri: this.dataNodes + "/guardar",
         body: {
             key: key,
             value: value

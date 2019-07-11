@@ -17,7 +17,11 @@ app.get('/nodoDatos/obtener', function(req, res) {
     const key = req.query.key;
     console.log("leyendo key: " + key);
     const data = dataNodes.find(nodoDeDatos => nodoDeDatos.getKey() === key).getValue();
-    res.send(data);
+    var objResponse = {
+      'value': data,
+      'timestamp': args['port'] //TODO: esto en realidad deberia ser el timestamp al momento de guardarse.
+    };
+    res.send(objResponse);
   });
 
 

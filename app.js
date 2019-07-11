@@ -15,16 +15,18 @@ app.get('/api/saludar', function(req, res) {
 app.get('/api/conseguir', function(req, res) {
     const key = req.query.key;
     console.log("leyendo key: " + key);
-    const data = ring.find(key);
-    res.send(data);
+    ring.find(key)
+    .then((response) => res.send(response))
+    .catch(() => res.send("Ocurrio un error leyendo la key: " + key));
   });
 
 app.post('/api/insertar', function(req, res) {
     const key = req.body.key;
     const value = req.body.value;
     console.log("guardando key: " + key);
-    ring.save(key, value);
-    res.send("OK");
+    ring.save(key, value)
+    .then(() => res.send("OK"))
+    .catch(() => res.send("Ocurrio un error guardando el par(" + key + ", " + value + ")"));
 });
 
 app.listen(args['port'], function () {

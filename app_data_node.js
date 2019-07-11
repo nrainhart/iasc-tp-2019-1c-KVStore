@@ -1,7 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const args = require('minimist')(process.argv.slice(2))
-const Node = require('./dataNode');
+const Node = require('./data_node');
 
 var dataNodes = [];
 

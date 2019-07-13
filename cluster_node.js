@@ -64,16 +64,27 @@ ClusterNode.prototype.save = function(key, value) {
 };
 
 ClusterNode.prototype.saveRest = function(key, value) { //TODO: hacer algo similar a lo del promise.all para guardar en todos los nodos del cluster
+    const requests = this.dataNodes.map(dataNode => this.saveKeyOnOneDataNode(key, value, dataNode));
+    return Promise.all(requests)
+      .then((values) => {
+          let valorMasNuevo = this.valorMasReciente(values);
+          console.log("valor mas nuevo: " + valorMasNuevo);
+          return valorMasNuevo;
+      });
+    //.catch(/* handle error */);
+};
+
+ClusterNode.prototype.saveKeyOnOneDataNode = function(key, value, dataNode) {
     return request({
         method: 'POST',
-        uri: this.dataNodes + "/guardar",
+        uri: dataNode + '/guardar',
         body: {
             key: key,
             value: value
         },
         json: true // Automatically stringifies the body to JSON
     });
-};
+}
 
 ClusterNode.prototype.showEntries = function() { //TODO: esto esta a modo de log debug para poder ir visualizando donde se guarda cada key, despues habria que sacarlo
     console.log(this.memory);

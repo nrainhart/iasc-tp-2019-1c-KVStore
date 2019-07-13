@@ -15,7 +15,7 @@ var clusterNode1 = new ClusterNode("clusterNode1", ["http://localhost:8050/nodoD
 //var clusterNode3 = new ClusterNode("clusterNode3");
 
 //esto solo lo usamos para interpretar de manera sencilla en el log a que clusterNode corresponde el dato guardado o leido.
-clusterNode1.save("clusterNode1", "clusterNode1");
+clusterNode1.saveRest("clusterNode1", "clusterNode1");
 //clusterNode2.save("clusterNode2", "clusterNode2");
 //clusterNode3.save("clusterNode3", "clusterNode3");
 

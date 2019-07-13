@@ -1,0 +1,163 @@
+{
+	"info": {
+		"_postman_id": "9483a09c-ed89-4bce-982d-8931b3d3b1cf",
+		"name": "IASC",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Coordinador",
+			"item": [
+				{
+					"name": "Keep Alive",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"key\": \"prueba\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3030/api/keepAlive",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3030",
+							"path": [
+								"api",
+								"keepAlive"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "New Node",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"key\": \"prueba\"\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3030/api/newNode",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3030",
+							"path": [
+								"api",
+								"newNode"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List Nodes",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3030/api/nodes",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3030",
+							"path": [
+								"api",
+								"nodes"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Insert Key-Value",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"key\": \"someKey\",\n\t\"value\": \"someValue\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/insertar",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"insertar"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Read Value",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:3000/api/conseguir?key=someKey",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"conseguir"
+					],
+					"query": [
+						{
+							"key": "key",
+							"value": "someKey"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

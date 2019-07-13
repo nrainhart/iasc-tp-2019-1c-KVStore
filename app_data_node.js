@@ -1,9 +1,8 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const args = require('minimist')(process.argv.slice(2))
-const Node = require('./data_node');
 
-var dataNodes = [];
+var paresClaveValor = new Map();
 
 const app = express();
 app.use(bodyParser.json()); // support json encoded bodies
@@ -16,12 +15,12 @@ app.get('/nodoDatos/hi', function(req, res) {
 app.get('/nodoDatos/obtener', function(req, res) {
     const key = req.query.key;
     console.log("leyendo key: " + key);
-    const data = dataNodes.find(nodoDeDatos => nodoDeDatos.getKey() === key).getValue();
-    var objResponse = {
-      'value': data,
-      'timestamp': args['port'] //TODO: esto en realidad deberia ser el timestamp al momento de guardarse.
-    };
-    res.send(objResponse);
+    const valorConTimestamp = paresClaveValor.get(key);
+    if(valorConTimestamp) {
+      res.send(valorConTimestamp);
+    } else {
+      res.sendStatus(404);
+    }
   });
 
 
@@ -29,7 +28,11 @@ app.post('/nodoDatos/guardar', function(req, res) {
     const key = req.body.key;
     const value = req.body.value;
     console.log("guardando key: " + key);
-    dataNodes.push(new Node(key, value));
+    const valorConTimestamp = {
+      'value': value,
+      'timestamp': new Date()
+    };
+    paresClaveValor.set(key, valorConTimestamp);
     res.send("OK");
 });
 

@@ -41,9 +41,7 @@ ClusterNode.prototype.saveRest = function(key, value) { //TODO: hacer algo simil
     const requests = this.dataNodes.map(dataNode => this.saveKeyOnOneDataNode(key, value, dataNode));
     return Promise.all(requests)
       .then((values) => {
-          let valorMasNuevo = this.valorMasReciente(values);
-          console.log("valor mas nuevo: " + valorMasNuevo);
-          return valorMasNuevo;
+          console.log(`Se pudo almacenar el par(${key},${value}) en todos los nodos de datos del cluster`);
       });
     //.catch(/* handle error */);
 };

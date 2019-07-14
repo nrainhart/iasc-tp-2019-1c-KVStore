@@ -16,7 +16,7 @@ const MASTER_NODE_EXPIRATION_TIME_IN_SECONDS = MASTER_NODE_QUERY_INTERVAL_IN_SEC
 class Coordinador {
 
     constructor() {
-        this._masterNodeKey = "vsfgd54";
+        this._masterNodeKey;
         this._nodesCollection;
         this._client;
 
@@ -24,12 +24,31 @@ class Coordinador {
         console.log(this._nodesCollection);
     }
 
+    existeMaster(objectToCreate, callback) {
+        this._nodesCollection.findOne({ 'master': true })
+            .then((x) => {
+                if (x) {
+                    objectToCreate.master = false;
+                } else {
+                    objectToCreate.master = true;
+                    this._masterNodeKey = objectToCreate.key;
+                };
+                console.log(x)
+            })
+            .then(callback(objectToCreate));
+    };
+
     addNewNode(objectToCreate) {
-        this._nodesCollection.insertOne(objectToCreate, (res) => console.log(res));
+        var a = this;
+        objectToCreate.master = !this.existeMaster(objectToCreate,
+            (x) => { a._nodesCollection.insertOne(x) });
     };
 
     keepAlive(OrquestadorKey) {
-        this._nodesCollection.findOneAndUpdate({ 'key': OrquestadorKey }, { $set: { lastUpdate: new Date() } }, (res) => console.log(res));
+        this._nodesCollection.findOneAndUpdate(
+            { 'key': OrquestadorKey },
+            { $set: { lastUpdate: new Date() } },
+            (res) => console.log(res));
     }
 
     initializeCoordinador() {
@@ -54,7 +73,7 @@ module.exports = {
 };
 
 app.post('/api/newNode', function (req, res) {
-    const nodeDocument = {
+    let nodeDocument = {
         key: req.body.key,
         lastUpdate: new Date()
     };
@@ -76,8 +95,8 @@ app.get('/api/nodes', function (req, res) {
     res.status(200).send("OK");
 });
 
-app.listen(args['port'], function () {
-    console.log('Coordinador listening on port: ' + args['port']);
+app.listen(3030, function () {
+    console.log('Coordinador listening on port: ' + 3030);
 });
 
 const coordinador = new Coordinador();

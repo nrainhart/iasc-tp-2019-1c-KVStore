@@ -4,7 +4,6 @@ const args = require('minimist')(process.argv.slice(2))
 
 var paresClaveValor = new Map();
 
-//F: https://www.npmjs.com/package/forever
 
 const app = express();
 app.use(bodyParser.json()); // support json encoded bodies

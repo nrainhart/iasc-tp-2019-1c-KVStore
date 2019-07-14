@@ -20,7 +20,7 @@ app.get('/api/saludar', function (req, res) {
 });
 
 app.get('/api/conseguir', function (req, res) {
-  //validarQueSoyMaster();
+  validarQueSoyMaster();
   const key = req.query.key;
   console.log('leyendo key: ' + key);
   ring.find(key)
@@ -29,7 +29,7 @@ app.get('/api/conseguir', function (req, res) {
 });
 
 app.post('/api/insertar', function(req, res) {
-  //validarQueSoyMaster();
+  validarQueSoyMaster();
   const key = req.body.key;
   const value = req.body.value;
   console.log("guardando key: " + key);
@@ -59,8 +59,6 @@ if(coordinarMasterConOtrosNodos) {
   }, 3000);
 };
 
-// app.listen(args['port'], function () {
-//   console.log('App listening on port: ' + args['port']);
-// });
-
-app.listen(3030);
+app.listen(args['port'], function () {
+  console.log('App listening on port: ' + args['port']);
+});

@@ -66,6 +66,6 @@ if(coordinarMasterConOtrosNodos) {
 
 app.listen(args['port'], function () {
   console.log('App listening on port: ' + args['port']);
-  app.maxSize = args['maxSize'];
-  console.log('Key/Value max Size: ' + args['maxSize']);
+  app.maxSize = args['maxSize'] ? args['maxSize'] : 5;
+  console.log('Key/Value max Size: ' + app.maxSize);
 });

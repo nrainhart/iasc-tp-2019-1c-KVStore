@@ -13,6 +13,17 @@ app.get('/nodoDatos/hi', function(req, res) {
   res.send('hello world');
 });
 
+app.post('/nodoDatos/maxSize', function (req, res) {
+  const maxSize = req.query.valor;
+  if (maxSize){
+    app.maxSize = maxSize;
+    console.log('Key/Value max Size: ' + app.maxSize);
+    res.status(200).send('Key/Value max Size: ' + app.maxSize);
+  } else {
+    res.status(400).send("ERROR");
+  }
+});
+
 app.get('/nodoDatos/obtener', function(req, res) {
     const key = req.query.key;
     console.log("leyendo key: " + key);
@@ -26,7 +37,8 @@ app.get('/nodoDatos/obtener', function(req, res) {
 
 
 app.post('/nodoDatos/guardar', function(req, res) {
-    const key = req.body.key;
+  const key = req.body.key;
+  if(paresClaveValor.size < app.maxSize){
     const value = req.body.value;
     console.log("guardando key: " + key);
     const valorConTimestamp = {
@@ -35,8 +47,14 @@ app.post('/nodoDatos/guardar', function(req, res) {
     };
     paresClaveValor.set(key, valorConTimestamp);
     res.send("OK");
+  } else {
+    console.log("No hay espacio para key: " + key);
+    res.status(400).send("Overflow");
+  }
 });
 
 app.listen(args['port'], function () {
   console.log('App listening on port: ' + args['port']);
+  app.maxSize = args['maxSize'] ? args['maxSize'] : 5;
+  console.log('Key/Value max Size: ' + app.maxSize);
 });

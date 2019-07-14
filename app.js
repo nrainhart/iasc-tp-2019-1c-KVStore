@@ -20,22 +20,22 @@ app.get('/api/saludar', function (req, res) {
 });
 
 app.get('/api/conseguir', function (req, res) {
-  validarQueSoyMaster();
+  //validarQueSoyMaster();
   const key = req.query.key;
   console.log('leyendo key: ' + key);
   ring.find(key)
-    .then((response) => res.send(response))
-    .catch(() => res.send('Ocurrio un error leyendo la key: ' + key));
+    .then((response) => res.status(200).send(response))
+    .catch(() => res.status(500).send('Ocurrio un error leyendo la key: ' + key));
 });
 
 app.post('/api/insertar', function(req, res) {
-  validarQueSoyMaster();
+  //validarQueSoyMaster();
   const key = req.body.key;
   const value = req.body.value;
   console.log("guardando key: " + key);
   ring.save(key, value)
-    .then(() => res.send("OK"))
-    .catch(() => res.send("Ocurrio un error guardando el par(" + key + ", " + value + ")"));
+    .then(() => res.status(200).send("OK"))
+    .catch(() => res.status(500).send("Ocurrio un error guardando el par(" + key + ", " + value + ")"));
 });
 
 function validarQueSoyMaster() {
@@ -59,6 +59,8 @@ if(coordinarMasterConOtrosNodos) {
   }, 3000);
 };
 
-app.listen(args['port'], function () {
-  console.log('App listening on port: ' + args['port']);
-});
+// app.listen(args['port'], function () {
+//   console.log('App listening on port: ' + args['port']);
+// });
+
+app.listen(3030);

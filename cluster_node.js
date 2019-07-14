@@ -18,16 +18,22 @@ ClusterNode.prototype.name = function(){
 ClusterNode.prototype.findRest = function(key) {
     const requests = this.dataNodes.map(dataNode => this.getKeyFromOneDataNode(key, dataNode));
     return Promise.all(requests)
-      .then((values) => {
+      .then((values) => { //F: filtrar de los que estan bien, el mas reciente https://github.com/OsoianMarcel/promise-all-always
         let valorMasNuevo = this.valorMasReciente(values);
-        console.log("valor mas nuevo: " + valorMasNuevo);
+        console.log("valor mas nuevo: " + valorMasNuevo.value);
         return valorMasNuevo;
       });
     //.catch(/* handle error */);
 };
 
 ClusterNode.prototype.valorMasReciente = function(shots) {
-    return shots.reduce((max, shot) => max && max.timestamp > shot.timestamp ? max : shot, null);
+    var entryWithLatestTimestamp = null;
+    shots.forEach(element => {
+        elementJson =  JSON.parse(element);
+        if (!entryWithLatestTimestamp || entryWithLatestTimestamp.timestamp < elementJson.timestamp)
+            entryWithLatestTimestamp = elementJson;
+    });
+    return entryWithLatestTimestamp;
 }
 
 ClusterNode.prototype.getKeyFromOneDataNode = function(key, dataNode) {
@@ -40,13 +46,14 @@ ClusterNode.prototype.getKeyFromOneDataNode = function(key, dataNode) {
 ClusterNode.prototype.saveRest = function(key, value) { //TODO: hacer algo similar a lo del promise.all para guardar en todos los nodos del cluster
     const requests = this.dataNodes.map(dataNode => this.saveKeyOnOneDataNode(key, value, dataNode));
     return Promise.all(requests)
-      .then((values) => {
+      .then((values) => { //F: Usar https://github.com/OsoianMarcel/promise-all-always
           console.log(`Se pudo almacenar el par(${key},${value}) en todos los nodos de datos del cluster`);
       });
     //.catch(/* handle error */);
 };
 
 ClusterNode.prototype.saveKeyOnOneDataNode = function(key, value, dataNode) {
+    console.log(`Guardando en ${dataNode}`);
     return request({
         method: 'POST',
         uri: dataNode + '/guardar',
@@ -55,7 +62,7 @@ ClusterNode.prototype.saveKeyOnOneDataNode = function(key, value, dataNode) {
             value: value
         },
         json: true // Automatically stringifies the body to JSON
-    });
+    }); //F: estaria bueno loguear el post y el resultado de la promise
 }
 
 module.exports = ClusterNode;

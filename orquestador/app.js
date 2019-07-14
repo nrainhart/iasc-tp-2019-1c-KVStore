@@ -32,10 +32,15 @@ app.post('/api/insertar', function(req, res) {
   validarQueSoyMaster();
   const key = req.body.key;
   const value = req.body.value;
-  console.log("guardando key: " + key);
-  ring.save(key, value)
-    .then(() => res.status(200).send("OK"))
-    .catch(() => res.status(500).send("Ocurrio un error guardando el par(" + key + ", " + value + ")"));
+  if (key.length <= app.maxSize && value.length <= app.maxSize){
+    console.log("guardando key: " + key);
+    ring.save(key, value)
+      .then(() => res.status(200).send("OK"))
+      .catch(() => res.status(500).send("Ocurrio un error guardando el par(" + key + ", " + value + ")"));
+  } else {
+    console.log("La clave/valor supera el Tamaño Máximo");
+    res.status(412).send('La clave ingresada superan el tamaño máximo'+ app.maxSize);
+  }
 });
 
 function validarQueSoyMaster() {
@@ -61,4 +66,6 @@ if(coordinarMasterConOtrosNodos) {
 
 app.listen(args['port'], function () {
   console.log('App listening on port: ' + args['port']);
+  app.maxSize = args['maxSize'];
+  console.log('Key/Value max Size: ' + args['maxSize']);
 });

@@ -1,43 +1,41 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const args = require('minimist')(process.argv.slice(2));
+const args = require('minimist')(process.argv.slice(2))
+const ring = require('./ring').ring;
 const { CoordinadorDeOrquestadores, CoordinadorDeOrquestadoresMockeado } = require('./CoordinadorDeOrquestadores');
 
 const app = express();
 app.use(bodyParser.json()); // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 
-const myKey = Math.random().toString(36).substring(7); // TODO podría tener sentido tener IP:puerto como clave
+const myKey = Math.random().toString(36).substring(7);
 
 const coordinarMasterConOtrosNodos = false;
 const coordinadorDeOrquestadores = coordinarMasterConOtrosNodos ?
   new CoordinadorDeOrquestadores(myKey) :
   new CoordinadorDeOrquestadoresMockeado;
 
-const map = new Map();
-
-// respond with "hello world" when a GET request is made to the homepage
 app.get('/api/saludar', function (req, res) {
   res.send('hello world');
 });
 
 app.get('/api/conseguir', function (req, res) {
   validarQueSoyMaster();
-  let key = req.query.key;
-  let data = map.get(key);
-  if(data !== undefined) {
-    res.send(data);
-  } else {
-    res.status(404).json({ error: `No se encontró la clave [${key}]`});
-  }
+  const key = req.query.key;
+  console.log('leyendo key: ' + key);
+  ring.find(key)
+    .then((response) => res.send(response))
+    .catch(() => res.send('Ocurrio un error leyendo la key: ' + key));
 });
 
-app.post('/api/insertar', function (req, res) {
+app.post('/api/insertar', function(req, res) {
   validarQueSoyMaster();
-  let key = req.body.key;
-  let value = req.body.value;
-  map.set(key, value);
-  res.send('OK');
+  const key = req.body.key;
+  const value = req.body.value;
+  console.log("guardando key: " + key);
+  ring.save(key, value)
+    .then(() => res.send("OK"))
+    .catch(() => res.send("Ocurrio un error guardando el par(" + key + ", " + value + ")"));
 });
 
 function validarQueSoyMaster() {
@@ -51,14 +49,15 @@ let masterErrorHandler = function(err, req, res, next) {
 };
 app.use(masterErrorHandler);
 
-//Chequeando si soy master
-setInterval(function () {
-  if (coordinadorDeOrquestadores.soyMaster(myKey)) {
-    console.log('Soy master');
-  } else {
-    console.log('No soy Master'); //Debería preguntar si hay un master
-  }
-}, 3000);
+if(coordinarMasterConOtrosNodos) {
+  setInterval(function () {
+    if (coordinadorDeOrquestadores.soyMaster(myKey)) {
+      console.log('Soy master');
+    } else {
+      console.log('No soy master');
+    }
+  }, 3000);
+};
 
 app.listen(args['port'], function () {
   console.log('App listening on port: ' + args['port']);

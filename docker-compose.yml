@@ -1,0 +1,13 @@
+version: '3.4'
+services:
+  orquestador:
+    build: ./orquestador
+    image: orquestador:orquestador
+    network_mode: host
+    depends_on:
+      - nododedatos
+  nododedatos:
+    build: ./nododedatos
+    image: nododedatos:nododedatos
+    ports:
+      - 8050-8051:3000

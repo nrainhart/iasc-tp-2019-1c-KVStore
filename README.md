@@ -12,3 +12,5 @@ Pasos para levantar la app:
     
 
 **Obs**: Si se quier levantar la app con otro puerto se debe escribir el comando **node app.js --port=<puerto_que_gustes>**
+
+Alternativa: levantar la app con Docker Compose: `docker-compose up --scale nododedatos=2`

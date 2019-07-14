@@ -19,6 +19,17 @@ app.get('/api/saludar', function (req, res) {
   res.send('hello world');
 });
 
+app.post('/api/maxSize', function (req, res) {
+  const maxSize = req.query.valor;
+  if (maxSize){
+    app.maxSize = maxSize;
+    console.log('Key/Value max Size: ' + app.maxSize);
+    res.status(200).send('Key/Value max Size: ' + app.maxSize);
+  } else {
+    res.status(400).send("ERROR");
+  }
+});
+
 app.get('/api/conseguir', function (req, res) {
   validarQueSoyMaster();
   const key = req.query.key;
@@ -39,7 +50,7 @@ app.post('/api/insertar', function(req, res) {
       .catch(() => res.status(500).send("Ocurrio un error guardando el par(" + key + ", " + value + ")"));
   } else {
     console.log("La clave/valor supera el Tamaño Máximo");
-    res.status(412).send('La clave ingresada superan el tamaño máximo'+ app.maxSize);
+    res.status(412).send('La clave ingresada superan el tamaño máximo' + app.maxSize);
   }
 });
 

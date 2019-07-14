@@ -21,7 +21,7 @@ ClusterNode.prototype.findRest = function(key) {
   return this.allResolved(requests)
     .then((successfulValues) => {
       let valorMasNuevo = this.valorMasReciente(successfulValues);
-      console.log('valor mas nuevo: ' + valorMasNuevo);
+      console.log('valor mas nuevo: ' + valorMasNuevo.value);
       return valorMasNuevo;
     })
     .catch(() => {
@@ -45,7 +45,13 @@ ClusterNode.prototype.allResolved = function(promises) {
 };
 
 ClusterNode.prototype.valorMasReciente = function(shots) {
-  return shots.reduce((max, shot) => max && max.timestamp > shot.timestamp ? max : shot, null);
+  var entryWithLatestTimestamp = null;
+  shots.forEach(element => {
+      elementJson =  JSON.parse(element);
+      if (!entryWithLatestTimestamp || entryWithLatestTimestamp.timestamp < elementJson.timestamp)
+          entryWithLatestTimestamp = elementJson;
+  });
+  return entryWithLatestTimestamp;
 };
 
 ClusterNode.prototype.getKeyFromOneDataNode = function(key, dataNode) {
@@ -71,6 +77,7 @@ ClusterNode.prototype.saveRest = function(key, value) {
 };
 
 ClusterNode.prototype.saveKeyOnOneDataNode = function(key, value, dataNode) {
+  console.log(`Guardando en ${dataNode}`);
   return request({
     method: 'POST',
     uri: dataNode + '/guardar',

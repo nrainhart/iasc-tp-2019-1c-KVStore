@@ -27,9 +27,10 @@ const consistentHashing = new ConsistentHashing(clusterNames);
 
 
 findClusterNode = function (key) {
-    var clusterName = consistentHashing.getNode(key);
+    const clusterName = consistentHashing.getNode(key);
+    console.log(`La clave [${key}] pertenece al cluster ${clusterName}`);
     return clusterNodes.find(clusterNode => clusterNode.name() === clusterName);
-}
+};
 
 module.exports = {
     ring: {

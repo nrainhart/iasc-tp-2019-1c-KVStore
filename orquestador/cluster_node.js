@@ -31,6 +31,24 @@ ClusterNode.prototype.findRest = function(key) {
     }); // TODO podría ser más granular (nodo de datos lleno, no hay nodos de datos, etc)
 };
 
+ClusterNode.prototype.todosLosValoresDelClusterQueCumplanLaCondicion = function(cond, value){
+    const requests = this.dataNodes.map(dataNode => this.getKeyFromOneDataNode(key, dataNode)); 
+    //No se me ocurre una forma copada para obtener las keys de los todos los Nodos del cluster. 
+    return this.allResolved(requests)
+      .then((successfulValues) =>{
+        let valorMasNuevo = this.valorMasReciente(successfulValues);
+        return valorMasNuevo.filter(valor => this.cumpleCondicion(cond, value, valor))
+      })
+}
+
+ClusterNode.prototype.cumpleCondicion = function(cond, value, valor) {
+ if(cond == 'Mayor'){
+    return valor > value
+    } else {
+    return  valor < value
+    }
+}
+
 ClusterNode.prototype.allResolved = function(promises) {
   return promiseAllAlways(promises)
     .then((values) => {
@@ -58,6 +76,13 @@ ClusterNode.prototype.getKeyFromOneDataNode = function(key, dataNode) {
   return request({
     "method":"GET",
     "uri": dataNode + "/obtener" + "?key=" + key,
+  });
+};
+
+ClusterNode.prototype.getValueFromOneDataNode = function(key, dataNode) {
+  return request({
+    "method":"GET",
+    "uri": dataNode + "/obtenerValor" + "?key=" + key,
   });
 };
 

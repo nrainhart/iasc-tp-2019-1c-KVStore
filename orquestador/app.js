@@ -39,6 +39,15 @@ app.get('/api/conseguir', function (req, res) {
     .catch(() => res.status(500).send('Ocurrio un error leyendo la key: ' + key));
 });
 
+app.get('/api/conseguirFiltrados', function (req, res) {
+  validarQueSoyMaster();
+  const cond = req.query.condition;
+  const valor = req.query.value;
+  ring.findFilteredValues(cond, valor)
+    .then((response) => res.send(response))
+    .catch(() => res.send('No hay ningún valor que compla la condición'));
+});
+
 app.post('/api/insertar', function(req, res) {
   validarQueSoyMaster();
   const key = req.body.key;

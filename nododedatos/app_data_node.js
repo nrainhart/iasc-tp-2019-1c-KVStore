@@ -35,6 +35,16 @@ app.get('/nodoDatos/obtener', function(req, res) {
     }
   });
 
+app.get('/nodoDatos/obtenerValor', function(req, res) {
+    const key = req.query.key;
+    console.log("leyendo key: " + key);
+    const valorConTimestamp = paresClaveValor.get(key);
+    if(valorConTimestamp) {
+      res.send(valorConTimestamp.value);
+    } else {
+      res.sendStatus(404);
+    }
+  });
 
 app.post('/nodoDatos/guardar', function(req, res) {
   const key = req.body.key;

@@ -8,9 +8,9 @@ que con un solo nodo no pasaria.
 */
 function ClusterNode (clusterName, dataNodes) { //TODO: aca se le deberia pasar la lista de las ips de los nodos correspondientes a este cluster
   this.clusterName = clusterName;
-  console.log("dataNodes: " + dataNodes);
+  console.log(`dataNodes: ${dataNodes}`);
   this.dataNodes = dataNodes;
-}
+};
 
 ClusterNode.prototype.name = function(){
   return this.clusterName;
@@ -21,7 +21,7 @@ ClusterNode.prototype.findRest = function(key) {
   return this.allResolved(requests)
     .then((successfulValues) => {
       let valorMasNuevo = this.valorMasReciente(successfulValues);
-      console.log('valor mas nuevo: ' + valorMasNuevo.value);
+      console.log(`valor mas nuevo: ${valorMasNuevo.value}`);
       return valorMasNuevo;
     })
     .catch(() => {
@@ -65,15 +65,15 @@ ClusterNode.prototype.valorMasReciente = function(shots) {
 
 ClusterNode.prototype.getKeyFromOneDataNode = function(key, dataNode) {
   return request({
-    "method":"GET",
-    "uri": dataNode + "/obtener" + "?key=" + key,
+    "method":`GET`,
+    "uri": `${dataNode}/obtener?key=${key}`
   });
 };
 
 ClusterNode.prototype.removeKeyFromOneDataNode = function(key, dataNode) {
   return request({
     "method":"DELETE",
-    "uri": dataNode + "/quitar" + "?key=" + key,
+    "uri": `${dataNode}/quitar?key=${key}`,
   });
 };
 
@@ -101,6 +101,21 @@ ClusterNode.prototype.saveRest = function(key, value) {
     })
     .catch(() => {
       let mensajeDeError = `No se pudo almacenar el par(${key},${value}) en el cluster de datos`;
+      console.log(mensajeDeError);
+      throw Error(mensajeDeError);
+    });
+};
+
+ClusterNode.prototype.deleteRest = function(key) {
+  const requests = this.dataNodes.map(dataNode => this.removeKeyFromOneDataNode(key, dataNode));
+  return this.allResolved(requests)
+    .then((successfulValues) => {
+      const borradosExitosos = successfulValues.length;
+      const cantidadDeNodosDeDatos = requests.length;
+      console.log(`Se pudo quitar la clave(${key}) en (${borradosExitosos}/${cantidadDeNodosDeDatos}) nodos del cluster de datos`);
+    })
+    .catch(() => {
+      let mensajeDeError = `No se pudo borrar la clave(${key}) en el cluster de datos`;
       console.log(mensajeDeError);
       throw Error(mensajeDeError);
     });

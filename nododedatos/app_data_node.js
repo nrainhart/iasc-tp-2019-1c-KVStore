@@ -1,6 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const args = require('minimist')(process.argv.slice(2))
+const args = require('minimist')(process.argv.slice(2));
 
 var paresClaveValor = new Map();
 
@@ -51,6 +51,12 @@ app.post('/nodoDatos/guardar', function(req, res) {
     console.log("No hay espacio para key: " + key);
     res.status(400).send("Overflow");
   }
+});
+
+app.post('/nodoDatos/mori', function(req, res) {
+  console.log("Muriendo...");
+  res.sendStatus(200);
+  process.exit(1);
 });
 
 app.listen(args['port'], function () {

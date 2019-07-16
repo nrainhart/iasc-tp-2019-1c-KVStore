@@ -35,7 +35,7 @@ app.get('/nodoDatos/obtener', function(req, res) {
     }
   });
 
-app.get('/nodoDatos/quitar', function(req, res) {
+app.delete('/nodoDatos/quitar', function(req, res) {
   const key = req.query.key;
   console.log("quitando key: " + key);
   if(paresClaveValor.delete(key)) {

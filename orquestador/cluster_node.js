@@ -79,6 +79,13 @@ ClusterNode.prototype.getKeyFromOneDataNode = function(key, dataNode) {
   });
 };
 
+ClusterNode.prototype.removeKeyFromOneDataNode = function(key, dataNode) {
+  return request({
+    "method":"DELETE",
+    "uri": dataNode + "/quitar" + "?key=" + key,
+  });
+};
+
 ClusterNode.prototype.getValueFromOneDataNode = function(key, dataNode) {
   return request({
     "method":"GET",

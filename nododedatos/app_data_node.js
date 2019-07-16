@@ -35,6 +35,16 @@ app.get('/nodoDatos/obtener', function(req, res) {
     }
   });
 
+app.get('/nodoDatos/quitar', function(req, res) {
+  const key = req.query.key;
+  console.log("quitando key: " + key);
+  if(paresClaveValor.delete(key)) {
+    res.sendStatus(200);
+  } else {
+    res.sendStatus(404);
+  }
+});
+
 app.get('/nodoDatos/obtenerValor', function(req, res) {
     const key = req.query.key;
     console.log("leyendo key: " + key);

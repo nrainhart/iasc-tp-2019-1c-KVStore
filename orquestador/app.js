@@ -15,54 +15,73 @@ const coordinadorDeOrquestadores = coordinarMasterConOtrosNodos ?
   new CoordinadorDeOrquestadores(myKey) :
   new CoordinadorDeOrquestadoresMockeado;
 
-app.get('/api/saludar', function (req, res) {
+app.get('/api/saludar', (_, res) => {
   res.send('hello world');
 });
 
-app.post('/api/maxSize', function (req, res) {
+app.post('/api/maxSize',  (req, res) => {
   const maxSize = req.query.valor;
   if (maxSize){
     app.maxSize = maxSize;
-    console.log('Key/Value max Size: ' + app.maxSize);
-    res.status(200).send('Key/Value max Size: ' + app.maxSize);
+    console.log(`Key/Value max Size: ${app.maxSize}`);
+    res.status(200).send(`Key/Value max Size: ${app.maxSize}`);
   } else {
     res.status(400).send("ERROR");
   }
 });
 
-app.get('/api/conseguir', function (req, res) {
+app.get('/api/conseguir', (req, res) => {
   validarQueSoyMaster();
   const key = req.query.key;
   console.log('leyendo key: ' + key);
   app.ring.find(key)
     .then((response) => res.status(200).send(response))
-    .catch(() => res.status(500).send('Ocurrio un error leyendo la key: ' + key));
+    .catch(() => res.status(500).send(`Ocurrio un error leyendo la key: ${key}`));
 });
 
-app.post('/api/insertar', function(req, res) {
+app.get('/api/conseguirFiltrados', (req, res) => {
+  validarQueSoyMaster();
+  const cond = req.query.condition;
+  const valor = req.query.value;
+  ring.findFilteredValues(cond, valor)
+    .then((response) => res.send(response))
+    .catch(() => res.send('No hay ningún valor que compla la condición'));
+});
+
+app.post('/api/insertar', (req, res) => {
   validarQueSoyMaster();
   const key = req.body.key;
   const value = req.body.value;
   if (key.length <= app.maxSize && value.length <= app.maxSize){
-    console.log("guardando key: " + key);
+    console.log(`guardando key: ${key}`);
     app.ring.save(key, value)
       .then(() => res.status(200).send("OK"))
-      .catch(() => res.status(500).send("Ocurrio un error guardando el par(" + key + ", " + value + ")"));
+      .catch(() => res.status(500).send(`Ocurrio un error guardando el par(${key},${value})`));
   } else {
     console.log("La clave/valor supera el Tamaño Máximo");
-    res.status(412).send('La clave ingresada superan el tamaño máximo' + app.maxSize);
+    res.status(412).send(`La clave ingresada superan el tamaño máximo: ${app.maxSize}`);
   }
+});
+
+app.delete('/api/quitar', (req, res) => {
+  validarQueSoyMaster();
+  const key = req.query.key;
+    console.log(`quitando key: ${key}`);
+    ring.delete(key)
+      .then(() => res.status(200).send("OK"))
+      .catch(() => res.status(500).send(`Ocurrio un error quitando la clave(${key})`));
 });
 
 function validarQueSoyMaster() {
   if(!coordinadorDeOrquestadores.soyMaster()) {
     throw Error('No soy el nodo maestro');
   }
-}
+};
 
 let masterErrorHandler = function(err, req, res) {
   res.status(400).json({ error: err.toString() });
 };
+
 app.use(masterErrorHandler);
 
 if(coordinarMasterConOtrosNodos) {
@@ -76,9 +95,9 @@ if(coordinarMasterConOtrosNodos) {
 }
 
 app.listen(args['port'], function () {
-  console.log('App listening on port: ' + args['port']);
+  console.log(`App listening on port: ${args['port']}`);
   app.maxSize = args['maxSize'] || 20;
-  console.log('Key/Value max Size: ' + app.maxSize);
+  console.log(`Key/Value max Size: ${app.maxSize}`);
   app.clusters = args['clusters'] || 4;
   app.replicas = args['replicas'] || 2;
   console.log(`Se utilizarán ${app.clusters} clusters con ${app.replicas} réplicas cada uno`);

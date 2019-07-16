@@ -12,7 +12,7 @@ function ClusterNode (clusterName, dataNodes) {
   this.log("dataNodes: " , dataNodes);
   this.dataNodes = new Set(dataNodes);
   this.nodosMuertos = new Set();
-}
+};
 
 ClusterNode.prototype.name = function(){
   return this.clusterName;
@@ -24,7 +24,7 @@ ClusterNode.prototype.findRest = function(key) {
   return this.allResolved(requests)
     .then((successfulValues) => {
       let valorMasNuevo = this.valorMasReciente(successfulValues);
-      this.log('valor mas nuevo: ' , valorMasNuevo.value);
+      this.log(`valor mas nuevo: ${valorMasNuevo.value}`);
       return valorMasNuevo;
     })
     .catch(() => {
@@ -32,6 +32,17 @@ ClusterNode.prototype.findRest = function(key) {
       this.log(mensajeDeError);
       throw Error(mensajeDeError);
     }); // TODO podría ser más granular (nodo de datos lleno, no hay nodos de datos, etc)
+};
+
+ClusterNode.prototype.todosLosValoresDelClusterQueCumplanLaCondicion = function(cond, value){
+    const requests = [];
+    this.dataNodes.forEach(dataNode => requests.push(this.getKeyFromOneDataNode(key, dataNode)));
+    //No se me ocurre una forma copada para obtener las keys de los todos los Nodos del cluster. 
+    return this.allResolved(requests)
+      .then((successfulValues) =>{
+        let valorMasNuevo = this.valorMasReciente(successfulValues);
+        return valorMasNuevo.filter(valor => this.cumpleCondicion(cond, value, valor))
+      });
 };
 
 ClusterNode.prototype.allResolved = function(promises) {
@@ -59,8 +70,22 @@ ClusterNode.prototype.valorMasReciente = function(shots) {
 
 ClusterNode.prototype.getKeyFromOneDataNode = function(key, dataNode) {
   return request({
+    "method":`GET`,
+    "uri": `${dataNode}/obtener?key=${key}`
+  });
+};
+
+ClusterNode.prototype.removeKeyFromOneDataNode = function(key, dataNode) {
+  return request({
+    "method":"DELETE",
+    "uri": `${dataNode}/quitar?key=${key}`,
+  });
+};
+
+ClusterNode.prototype.getValueFromOneDataNode = function(key, dataNode) {
+  return request({
     "method":"GET",
-    "uri": dataNode + "/obtener" + "?key=" + key,
+    "uri": dataNode + "/obtenerValor" + "?key=" + key,
   });
 };
 
@@ -75,6 +100,22 @@ ClusterNode.prototype.saveRest = function(key, value) {
     })
     .catch(() => {
       let mensajeDeError = `No se pudo almacenar el par(${key},${value}) en el cluster de datos`;
+      this.log(mensajeDeError);
+      throw Error(mensajeDeError);
+    });
+};
+
+ClusterNode.prototype.deleteRest = function(key) {
+  const requests = [];
+  this.dataNodes.forEach(dataNode => requests.push(this.removeKeyFromOneDataNode(key, dataNode)));
+  return this.allResolved(requests)
+    .then((successfulValues) => {
+      const borradosExitosos = successfulValues.length;
+      const cantidadDeNodosDeDatos = requests.length;
+      this.log(`Se pudo quitar la clave(${key}) en (${borradosExitosos}/${cantidadDeNodosDeDatos}) nodos del cluster de datos`);
+    })
+    .catch(() => {
+      let mensajeDeError = `No se pudo borrar la clave(${key}) en el cluster de datos`;
       this.log(mensajeDeError);
       throw Error(mensajeDeError);
     });

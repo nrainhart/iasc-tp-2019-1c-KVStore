@@ -48,7 +48,7 @@ class HashRing {
 
     //Esta función podrá no estar delegada, y estar directamente en el ring.
     findFilteredValuesInClusterNodes(cond, value) {
-    return Promise.all(clusterNodes.map(clusterNode => clusterNode.todosLosValoresDelClusterQueCumplanLaCondicion(cond, value)))
+    return Promise.all(this.clusterNodes.map(clusterNode => clusterNode.todosLosValoresDelClusterQueCumplanLaCondicion(cond, value)))
     .then(resultadosPorCluster => resultadosPorCluster.flat());
     };
 

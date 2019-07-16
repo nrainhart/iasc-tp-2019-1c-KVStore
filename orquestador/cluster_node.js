@@ -39,6 +39,7 @@ ClusterNode.prototype.todosLosValoresDelClusterQueCumplanLaCondicion = function(
     this.dataNodes.forEach(dataNode => requests.push(this.getFilteredValuesFromOneDataNode(cond,value, dataNode)));
     return this.allResolved(requests)
       .then((successfulValues) =>{
+        this.log("valores encontrados al buscar por rango: ", successfulValues);
         let resultadosFiltrados = successfulValues[0];
         return resultadosFiltrados;
       })

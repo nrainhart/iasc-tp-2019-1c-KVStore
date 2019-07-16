@@ -43,7 +43,7 @@ app.get('/api/conseguirFiltrados', (req, res) => {
   validarQueSoyMaster();
   const cond = req.query.condicion;
   const valor = req.query.valor;
-  ring.findFilteredValues(cond, valor)
+  app.ring.findFilteredValues(cond, valor)
     .then((response) => res.send(response))
     .catch(() => res.send('No hay ningún valor que compla la condición'));
 });

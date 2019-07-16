@@ -37,7 +37,7 @@ class HashRing {
     };
 
     delete(key) {
-        const clusterNode = findClusterNode(key);
+        const clusterNode = this.findClusterNode(key);
         return clusterNode.deleteRest(key);
     };
 

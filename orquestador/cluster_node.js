@@ -35,7 +35,8 @@ ClusterNode.prototype.findRest = function(key) {
 };
 
 ClusterNode.prototype.todosLosValoresDelClusterQueCumplanLaCondicion = function(cond, value){
-    const requests = this.dataNodes.map(dataNode => this.getFilteredValuesFromOneDataNode(cond,value, dataNode)); 
+    const requests = [];
+    this.dataNodes.forEach(dataNode => requests.push(this.getFilteredValuesFromOneDataNode(cond,value, dataNode)));
     return this.allResolved(requests)
       .then((successfulValues) =>{
         let resultadosFiltrados = successfulValues[0];

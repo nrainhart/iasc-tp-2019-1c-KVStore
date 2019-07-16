@@ -42,15 +42,15 @@ class HashRing {
     };
 
     findFilteredValues(cond, value) {
-        const clusterNodeValores = findFilteredValuesInClusterNodes(cond, value);
+        const clusterNodeValores = this.findFilteredValuesInClusterNodes(cond, value);
         return clusterNodeValores;
     };
 
-//Esta función podrá no estar delegada, y estar directamente en el ring.
-findFilteredValuesInClusterNodes = function(cond, value){
+    //Esta función podrá no estar delegada, y estar directamente en el ring.
+    findFilteredValuesInClusterNodes(cond, value) {
     return Promise.all(clusterNodes.map(clusterNode => clusterNode.todosLosValoresDelClusterQueCumplanLaCondicion(cond, value)))
     .then(resultadosPorCluster => resultadosPorCluster.flat());
-};
+    };
 
     findClusterNode(key) {
         const clusterName = this.consistentHashing.getNode(key);

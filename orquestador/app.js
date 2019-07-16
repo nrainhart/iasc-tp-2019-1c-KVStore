@@ -1,7 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const args = require('minimist')(process.argv.slice(2))
-const ring = require('./ring').ring;
+const args = require('minimist')(process.argv.slice(2));
+const HashRing = require('./ring');
 const { CoordinadorDeOrquestadores, CoordinadorDeOrquestadoresMockeado } = require('./CoordinadorDeOrquestadores');
 
 const app = express();
@@ -34,7 +34,7 @@ app.get('/api/conseguir', function (req, res) {
   validarQueSoyMaster();
   const key = req.query.key;
   console.log('leyendo key: ' + key);
-  ring.find(key)
+  app.ring.find(key)
     .then((response) => res.status(200).send(response))
     .catch(() => res.status(500).send('Ocurrio un error leyendo la key: ' + key));
 });
@@ -45,7 +45,7 @@ app.post('/api/insertar', function(req, res) {
   const value = req.body.value;
   if (key.length <= app.maxSize && value.length <= app.maxSize){
     console.log("guardando key: " + key);
-    ring.save(key, value)
+    app.ring.save(key, value)
       .then(() => res.status(200).send("OK"))
       .catch(() => res.status(500).send("Ocurrio un error guardando el par(" + key + ", " + value + ")"));
   } else {
@@ -60,7 +60,7 @@ function validarQueSoyMaster() {
   }
 }
 
-let masterErrorHandler = function(err, req, res, next) {
+let masterErrorHandler = function(err, req, res) {
   res.status(400).json({ error: err.toString() });
 };
 app.use(masterErrorHandler);
@@ -73,10 +73,18 @@ if(coordinarMasterConOtrosNodos) {
       console.log('No soy master');
     }
   }, 3000);
-};
+}
 
 app.listen(args['port'], function () {
   console.log('App listening on port: ' + args['port']);
-  app.maxSize = args['maxSize'] ? args['maxSize'] : 5;
+  app.maxSize = args['maxSize'] || 20;
   console.log('Key/Value max Size: ' + app.maxSize);
+  app.clusters = args['clusters'] || 4;
+  app.replicas = args['replicas'] || 2;
+  console.log(`Se utilizarán ${app.clusters} clusters con ${app.replicas} réplicas cada uno`);
+  app.initialDataNodePort = args['initialDataNodePort'] || 8050;
+  app.finalDataNodePort = app.initialDataNodePort + (app.clusters * app.replicas) - 1;
+  console.log(`Se utilizarán los puertos ${app.initialDataNodePort} a ${app.finalDataNodePort} para nodos de datos`);
+
+  app.ring = new HashRing(app.clusters, app.replicas, app.initialDataNodePort, app.finalDataNodePort);
 });

@@ -10,4 +10,4 @@ services:
     build: ./nododedatos
     image: nododedatos:nododedatos
     ports:
-      - 8050-8051:3000
+      - 8050-8057:3000

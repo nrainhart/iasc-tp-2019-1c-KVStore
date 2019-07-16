@@ -96,7 +96,7 @@ ClusterNode.prototype.saveKeyOnOneDataNode = function(key, value, dataNode) {
 ClusterNode.prototype.healthCheckNodosDeDatos = function() {
   this.dataNodes.forEach(dataNode => this.updatearMuerto(dataNode))
   this.nodosMuertos.forEach(nodoMuerto => this.updatearRevivido(nodoMuerto))
-}
+};
 
 ClusterNode.prototype.updatearMuerto = function(dataNode) {
   this.callHealthCheck(dataNode)
@@ -105,7 +105,7 @@ ClusterNode.prototype.updatearMuerto = function(dataNode) {
       this.log("El nodo: " , dataNode , " esta muerto")
       this.sacarNodoMuerto(dataNode)
     });
-}
+};
 
 ClusterNode.prototype.updatearRevivido = function(dataNode) {
   this.callHealthCheck(dataNode)
@@ -124,16 +124,16 @@ ClusterNode.prototype.sacarNodoMuerto = function(nodoMuerto) {
   this.dataNodes.delete(nodoMuerto);
   this.nodosMuertos.add(nodoMuerto);
   this.log("nodos muertos: " , this.nodosMuertos);
-}
+};
 
 ClusterNode.prototype.agregarNodoRevivido = function(nodoRevivido) {
   this.nodosMuertos.delete(nodoRevivido);
   this.dataNodes.add(nodoRevivido);
   this.log("nodos vivos: " , this.dataNodes);
-}
+};
 
 ClusterNode.prototype.log = function(...logMessage) {
   console.log("[" , this.clusterName , "]=> ", logMessage);
-}
+};
 
 module.exports = ClusterNode;

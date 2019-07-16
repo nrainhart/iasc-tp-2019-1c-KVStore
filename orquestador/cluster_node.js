@@ -8,9 +8,9 @@ que con un solo nodo no pasaria.
 */
 function ClusterNode (clusterName, dataNodes) { //TODO: aca se le deberia pasar la lista de las ips de los nodos correspondientes a este cluster
   this.clusterName = clusterName;
-  console.log("dataNodes: " + dataNodes);
+  console.log(`dataNodes: ${dataNodes}`);
   this.dataNodes = dataNodes;
-}
+};
 
 ClusterNode.prototype.name = function(){
   return this.clusterName;
@@ -21,7 +21,7 @@ ClusterNode.prototype.findRest = function(key) {
   return this.allResolved(requests)
     .then((successfulValues) => {
       let valorMasNuevo = this.valorMasReciente(successfulValues);
-      console.log('valor mas nuevo: ' + valorMasNuevo.value);
+      console.log(`valor mas nuevo: ${valorMasNuevo.value}`);
       return valorMasNuevo;
     })
     .catch(() => {
@@ -38,8 +38,8 @@ ClusterNode.prototype.todosLosValoresDelClusterQueCumplanLaCondicion = function(
       .then((successfulValues) =>{
         let valorMasNuevo = this.valorMasReciente(successfulValues);
         return valorMasNuevo.filter(valor => this.cumpleCondicion(cond, value, valor))
-      })
-}
+      });
+};
 
 ClusterNode.prototype.allResolved = function(promises) {
   return promiseAllAlways(promises)
@@ -66,15 +66,15 @@ ClusterNode.prototype.valorMasReciente = function(shots) {
 
 ClusterNode.prototype.getKeyFromOneDataNode = function(key, dataNode) {
   return request({
-    "method":"GET",
-    "uri": dataNode + "/obtener" + "?key=" + key,
+    "method":`GET`,
+    "uri": `${dataNode}/obtener?key=${key}`
   });
 };
 
 ClusterNode.prototype.removeKeyFromOneDataNode = function(key, dataNode) {
   return request({
     "method":"DELETE",
-    "uri": dataNode + "/quitar" + "?key=" + key,
+    "uri": `${dataNode}/quitar?key=${key}`,
   });
 };
 

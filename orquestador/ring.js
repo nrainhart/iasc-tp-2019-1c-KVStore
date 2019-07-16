@@ -9,10 +9,10 @@ le notifiquen al master que ya estan up (queda por definir...)
 //==========================================================================//
 //===Ojo para que esto funcione es necesario levantar estos nodos a mano!!!====
 //==========================================================================// 
-var clusterNode1 = new ClusterNode("clusterNode1", ["http://localhost:8050/nodoDatos", "http://localhost:8051/nodoDatos"]);  
+const clusterNode1 = new ClusterNode("clusterNode1", ["http://localhost:8050/nodoDatos", "http://localhost:8051/nodoDatos"]);  
 
-//var clusterNode2 = new ClusterNode("clusterNode2");
-//var clusterNode3 = new ClusterNode("clusterNode3");
+//const clusterNode2 = new ClusterNode("clusterNode2");
+//const clusterNode3 = new ClusterNode("clusterNode3");
 
 //esto solo lo usamos para interpretar de manera sencilla en el log a que clusterNode corresponde el dato guardado o leido.
 clusterNode1.saveRest("clusterNode1", "clusterNode1");
@@ -62,4 +62,3 @@ module.exports = {
         }
     }
 };
-

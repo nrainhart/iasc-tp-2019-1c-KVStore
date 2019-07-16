@@ -150,9 +150,12 @@ ClusterNode.prototype.updatearMuerto = function(dataNode) {
 
 ClusterNode.prototype.updatearRevivido = function(dataNode) {
   this.callHealthCheck(dataNode)
-    .then(this.agregarNodoRevivido(dataNode)) 
+    .then((res) => {
+        this.log(`el nodo ${dataNode} revivio, la respuesta es: ${res}`);
+        this.agregarNodoRevivido(dataNode);
+    })
     .catch(()=> this.log("El nodo ", dataNode, " sigue muerto"));
-}
+};
 
 ClusterNode.prototype.callHealthCheck = function(dataNode) {
   return request({

@@ -41,14 +41,6 @@ ClusterNode.prototype.todosLosValoresDelClusterQueCumplanLaCondicion = function(
       })
 }
 
-ClusterNode.prototype.cumpleCondicion = function(cond, value, valor) {
- if(cond == 'Mayor'){
-    return valor > value
-    } else {
-    return  valor < value
-    }
-}
-
 ClusterNode.prototype.allResolved = function(promises) {
   return promiseAllAlways(promises)
     .then((values) => {

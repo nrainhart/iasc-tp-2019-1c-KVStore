@@ -56,6 +56,13 @@ app.get('/nodoDatos/obtenerValor', function(req, res) {
     }
   });
 
+app.get('/nodoDatos/obtenerMapa', function(req, res) {
+  const cond = req.query.condition;
+  const value = req.query.value;
+  const mapa = paresClaveValor.filter(par => this.estaCorrecto(par, cond, valor));
+  res.send(mapa);
+};
+
 app.post('/nodoDatos/guardar', function(req, res) {
   const key = req.body.key;
   if(paresClaveValor.size < app.maxSize){
@@ -78,3 +85,11 @@ app.listen(args['port'], function () {
   app.maxSize = args['maxSize'] ? args['maxSize'] : 5;
   console.log('Key/Value max Size: ' + app.maxSize);
 });
+
+function estaCorrecto(par, cond, valor) {
+ if(cond == 'Mayor'){
+    return par.get(valorConTimestamp).value > valor
+  } else {
+    return  par.get(valorConTimestamp).value < valor
+  }
+}

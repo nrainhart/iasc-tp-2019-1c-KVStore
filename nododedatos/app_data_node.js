@@ -55,15 +55,12 @@ app.get('/nodoDatos/obtenerValor', function(req, res) {
     }
   });
 
-app.get('/nodoDatos/obtenerMapa', function(req, res) {
-  const cond = req.query.condition;
-  const value = req.query.value;
-  const map1 = new Array();
-  [...paresClaveValor]
-  .filter(([k, v]) => estaCorrecto(v.value, cond, value ))
-  .map(([k, v]) => { map1.push(v) });
-  console.log(map1.length);
-  res.send(map1);
+app.get('/nodoDatos/filtroPorCondicion', function(req, res) {
+  const cond = req.query.condicion;
+  const valorCondicion = req.query.valor;
+  const listaDeDatos = Array.from(paresClaveValor.values())
+  let valores = listaDeDatos.filter(valor => estaCorrecto(valor.value, cond, valorCondicion));
+  res.send(valores);
 });
 
 app.post('/nodoDatos/guardar', function(req, res) {
@@ -83,7 +80,7 @@ app.post('/nodoDatos/guardar', function(req, res) {
   }
 });
 
-app.listen(8050, function () {
+app.listen(args['port'], function () {
   console.log('App listening on port: ' + args['port']);
   app.maxSize = args['maxSize'] ? args['maxSize'] : 5;
   console.log('Key/Value max Size: ' + app.maxSize);

@@ -34,7 +34,8 @@ findClusterNode = function (key) {
 
 //Esta función podrá no estar delegada, y estar directamente en el ring.
 findFilteredValuesInClusterNodes = function(cond, value){
-    return clusterNodes.map(clusterNode => clusterNode.todosLosValoresDelClusterQueCumplanLaCondicion(cond, value));
+    return Promise.all(clusterNodes.map(clusterNode => clusterNode.todosLosValoresDelClusterQueCumplanLaCondicion(cond, value)))
+    .then(resultadosPorCluster => resultadosPorCluster.flat());
 };
 
 
@@ -49,7 +50,7 @@ module.exports = {
         save: function(key, value) {
             const clusterNode = findClusterNode(key);
             return clusterNode.saveRest(key, value);
-        }
+        },
 
         findFilteredValues: function(cond, value){
         	const clusterNodeValores = findFilteredValuesInClusterNodes(cond, value);

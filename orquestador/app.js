@@ -63,6 +63,15 @@ app.post('/api/insertar', function(req, res) {
   }
 });
 
+app.delete('/api/quitar', function(req, res) {
+  validarQueSoyMaster();
+  const key = req.query.key;
+    console.log("quitando key: " + key);
+    ring.delete(key)
+      .then(() => res.status(200).send("OK"))
+      .catch(() => res.status(500).send("Ocurrio un error quitando la clave(" + key + ")"));
+});
+
 function validarQueSoyMaster() {
   if(!coordinadorDeOrquestadores.soyMaster()) {
     throw Error('No soy el nodo maestro');

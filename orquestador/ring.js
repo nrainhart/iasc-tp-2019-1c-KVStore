@@ -49,7 +49,12 @@ module.exports = {
         save: function(key, value) {
             const clusterNode = findClusterNode(key);
             return clusterNode.saveRest(key, value);
-        }
+        },
+
+        delete: function(key){
+            const clusterNode = findClusterNode(key);
+            return clusterNode.deleteRest(key);
+        },
 
         findFilteredValues: function(cond, value){
         	const clusterNodeValores = findFilteredValuesInClusterNodes(cond, value);

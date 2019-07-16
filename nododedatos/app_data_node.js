@@ -83,7 +83,7 @@ app.post('/nodoDatos/guardar', function(req, res) {
   }
 });
 
-app.listen(8050, function () {
+app.listen(args['port'], function () {
   console.log('App listening on port: ' + args['port']);
   app.maxSize = args['maxSize'] ? args['maxSize'] : 5;
   console.log('Key/Value max Size: ' + app.maxSize);

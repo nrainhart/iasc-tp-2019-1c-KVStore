@@ -100,6 +100,21 @@ ClusterNode.prototype.saveRest = function(key, value) {
     });
 };
 
+ClusterNode.prototype.deleteRest = function(key) {
+  const requests = this.dataNodes.map(dataNode => this.removeKeyFromOneDataNode(key, dataNode));
+  return this.allResolved(requests)
+    .then((successfulValues) => {
+      const borradosExitosos = successfulValues.length;
+      const cantidadDeNodosDeDatos = requests.length;
+      console.log(`Se pudo quitar la clave(${key}) en (${borradosExitosos}/${cantidadDeNodosDeDatos}) nodos del cluster de datos`);
+    })
+    .catch(() => {
+      let mensajeDeError = `No se pudo borrar la clave(${key}) en el cluster de datos`;
+      console.log(mensajeDeError);
+      throw Error(mensajeDeError);
+    });
+};
+
 ClusterNode.prototype.saveKeyOnOneDataNode = function(key, value, dataNode) {
   console.log(`Guardando en ${dataNode}`);
   return request({

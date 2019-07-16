@@ -13,6 +13,10 @@ app.get('/nodoDatos/hi', function(req, res) {
   res.send('hello world');
 });
 
+app.get('/nodoDatos/health-check', function(req, res) {
+  res.send("UP");
+});
+
 app.post('/nodoDatos/maxSize', function (req, res) {
   const maxSize = req.query.valor;
   if (maxSize){

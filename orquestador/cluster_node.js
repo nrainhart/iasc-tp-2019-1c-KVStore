@@ -6,10 +6,12 @@ const promiseAllAlways = require('promise-all-always');
 es un cluster y no un solo nodo de forma que si se cae un nodo, aun asi seguimos teniendo el pto en el anillo. Cosa
 que con un solo nodo no pasaria.
 */
-function ClusterNode (clusterName, dataNodes) { //TODO: aca se le deberia pasar la lista de las ips de los nodos correspondientes a este cluster
+
+function ClusterNode (clusterName, dataNodes) {
   this.clusterName = clusterName;
-  console.log("dataNodes: " + dataNodes);
-  this.dataNodes = dataNodes;
+  this.log("dataNodes: " , dataNodes);
+  this.dataNodes = new Set(dataNodes);
+  this.nodosMuertos = new Set();
 }
 
 ClusterNode.prototype.name = function(){
@@ -17,16 +19,17 @@ ClusterNode.prototype.name = function(){
 };
 
 ClusterNode.prototype.findRest = function(key) {
-  const requests = this.dataNodes.map(dataNode => this.getKeyFromOneDataNode(key, dataNode));
+  const requests = [];
+  this.dataNodes.forEach(dataNode => requests.push(this.getKeyFromOneDataNode(key, dataNode)));
   return this.allResolved(requests)
     .then((successfulValues) => {
       let valorMasNuevo = this.valorMasReciente(successfulValues);
-      console.log('valor mas nuevo: ' + valorMasNuevo.value);
+      this.log('valor mas nuevo: ' , valorMasNuevo.value);
       return valorMasNuevo;
     })
     .catch(() => {
       let mensajeDeError = `Valor no encontrado para clave [${key}]`;
-      console.log(mensajeDeError);
+      this.log(mensajeDeError);
       throw Error(mensajeDeError);
     }); // TODO podría ser más granular (nodo de datos lleno, no hay nodos de datos, etc)
 };
@@ -62,22 +65,23 @@ ClusterNode.prototype.getKeyFromOneDataNode = function(key, dataNode) {
 };
 
 ClusterNode.prototype.saveRest = function(key, value) {
-  const requests = this.dataNodes.map(dataNode => this.saveKeyOnOneDataNode(key, value, dataNode));
+  const requests = [];
+  this.dataNodes.forEach(dataNode => requests.push(this.saveKeyOnOneDataNode(key, value, dataNode)));
   return this.allResolved(requests)
     .then((successfulValues) => {
       const escriturasExitosas = successfulValues.length;
       const cantidadDeNodosDeDatos = requests.length;
-      console.log(`Se pudo almacenar el par(${key},${value}) en (${escriturasExitosas}/${cantidadDeNodosDeDatos}) nodos del cluster de datos`);
+      this.log(`Se pudo almacenar el par(${key},${value}) en (${escriturasExitosas}/${cantidadDeNodosDeDatos}) nodos del cluster de datos`);
     })
     .catch(() => {
       let mensajeDeError = `No se pudo almacenar el par(${key},${value}) en el cluster de datos`;
-      console.log(mensajeDeError);
+      this.log(mensajeDeError);
       throw Error(mensajeDeError);
     });
 };
 
 ClusterNode.prototype.saveKeyOnOneDataNode = function(key, value, dataNode) {
-  console.log(`Guardando en ${dataNode}`);
+  this.log(`Guardando en ${dataNode}`);
   return request({
     method: 'POST',
     uri: dataNode + '/guardar',
@@ -88,5 +92,48 @@ ClusterNode.prototype.saveKeyOnOneDataNode = function(key, value, dataNode) {
     json: true // Automatically stringifies the body to JSON
   });
 };
+
+ClusterNode.prototype.healthCheckNodosDeDatos = function() {
+  this.dataNodes.forEach(dataNode => this.updatearMuerto(dataNode))
+  this.nodosMuertos.forEach(nodoMuerto => this.updatearRevivido(nodoMuerto))
+}
+
+ClusterNode.prototype.updatearMuerto = function(dataNode) {
+  this.callHealthCheck(dataNode)
+    .catch((error) => {
+      //this.log("Error: " , error.error , ", el nodo: " , dataNode , " esta muerto")
+      this.log("El nodo: " , dataNode , " esta muerto")
+      this.sacarNodoMuerto(dataNode)
+    });
+}
+
+ClusterNode.prototype.updatearRevivido = function(dataNode) {
+  this.callHealthCheck(dataNode)
+    .then(this.agregarNodoRevivido(dataNode)) 
+    .catch(()=> this.log("El nodo ", dataNode, " sigue muerto"));
+}
+
+ClusterNode.prototype.callHealthCheck = function(dataNode) {
+  return request({
+    "method":"GET",
+    "uri": dataNode + "/health-check" 
+  });
+};
+
+ClusterNode.prototype.sacarNodoMuerto = function(nodoMuerto) {
+  this.dataNodes.delete(nodoMuerto);
+  this.nodosMuertos.add(nodoMuerto);
+  this.log("nodos muertos: " , this.nodosMuertos);
+}
+
+ClusterNode.prototype.agregarNodoRevivido = function(nodoRevivido) {
+  this.nodosMuertos.delete(nodoRevivido);
+  this.dataNodes.add(nodoRevivido);
+  this.log("nodos vivos: " , this.dataNodes);
+}
+
+ClusterNode.prototype.log = function(...logMessage) {
+  console.log("[" , this.clusterName , "]=> ", logMessage);
+}
 
 module.exports = ClusterNode;

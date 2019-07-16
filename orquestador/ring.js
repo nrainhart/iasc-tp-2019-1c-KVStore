@@ -32,6 +32,14 @@ findClusterNode = function (key) {
     return clusterNodes.find(clusterNode => clusterNode.name() === clusterName);
 };
 
+setInterval(function () { 
+    healthCheckClusters();
+  }, 1000);
+
+healthCheckClusters = function() {
+    clusterNodes.forEach(clusterNode => clusterNode.healthCheckNodosDeDatos());
+}
+
 module.exports = {
     ring: {
 

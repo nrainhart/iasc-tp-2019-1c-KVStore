@@ -43,7 +43,7 @@ app.get('/nodoDatos/obtenerValor', (req, res) => {
     valorConTimestamp ? res.send(valorConTimestamp.value) : res.sendStatus(404);
 });
 
-app.get('/nodoDatos/filtroPorCondicion', function(req, res) {
+app.get('/nodoDatos/filtroPorCondicion', (req, res) => {
   const cond = req.query.condicion;
   const valorCondicion = req.query.valor;
   const listaDeDatos = Array.from(paresClaveValor.values())

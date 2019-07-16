@@ -46,6 +46,11 @@ class HashRing {
         return clusterNodeValores;
     };
 
+//Esta función podrá no estar delegada, y estar directamente en el ring.
+findFilteredValuesInClusterNodes = function(cond, value){
+    return Promise.all(clusterNodes.map(clusterNode => clusterNode.todosLosValoresDelClusterQueCumplanLaCondicion(cond, value)))
+    .then(resultadosPorCluster => resultadosPorCluster.flat());
+};
 
     findClusterNode(key) {
         const clusterName = this.consistentHashing.getNode(key);

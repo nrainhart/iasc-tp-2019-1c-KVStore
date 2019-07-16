@@ -49,7 +49,9 @@ class HashRing {
     //Esta función podrá no estar delegada, y estar directamente en el ring.
     findFilteredValuesInClusterNodes(cond, value) {
     return Promise.all(this.clusterNodes.map(clusterNode => clusterNode.todosLosValoresDelClusterQueCumplanLaCondicion(cond, value)))
-    .then(resultadosPorCluster => resultadosPorCluster.flat());
+    .then(resultadosPorCluster => {
+        return this.flatten(resultadosPorCluster);
+    });
     };
 
     findClusterNode(key) {
@@ -61,6 +63,12 @@ class HashRing {
     healthCheckClusters() {
         this.clusterNodes.forEach(clusterNode => clusterNode.healthCheckNodosDeDatos());
     }
+
+    flatten(arr) {
+        return arr.reduce(function (flat, toFlatten) {
+            return flat.concat(Array.isArray(toFlatten) ? flatten(toFlatten) : toFlatten);
+        }, []);
+    };
 }
 
 module.exports = HashRing;

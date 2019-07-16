@@ -8,7 +8,7 @@ que con un solo nodo no pasaria.
 */
 function ClusterNode (clusterName, dataNodes) { //TODO: aca se le deberia pasar la lista de las ips de los nodos correspondientes a este cluster
   this.clusterName = clusterName;
-  console.log("dataNodes: " + dataNodes);
+  console.log(`${clusterName}: ${dataNodes}`);
   this.dataNodes = dataNodes;
 }
 
